@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ token }}"><title>Campus Wallet · Expense tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body data-today="{{ today }}">
+<aside class="sidebar"><a class="brand" href="/">▧ <span>campus<span class="light">wallet</span></span></a>
+  <p class="nav-label">YOUR MONEY, SIMPLIFIED</p><a class="nav-item" href="#overview"><span>◫</span> Overview</a>
+  <a href="#transactions" class="nav-secondary"><span>↔</span> Transactions</a>
+  <div class="sidebar-bottom"><div class="student-icon">CW</div><strong>A little clarity.<br>A lot more control.</strong><p>Your everyday student<br>expense companion.</p><span class="local-dot">●</span> Stored on this device</div>
+</aside>
+<main id="overview">
+<header><div><div class="eyebrow">MAKE ROOM FOR WHAT MATTERS</div><h1>Your money at a glance<span>.</span></h1><p class="muted">Small expenses add up. Stay a step ahead.</p></div><button id="add-expense" class="primary">＋ Add expense</button></header>
+<div class="period"><div><span class="live-dot"></span> Monthly overview</div><label class="month-picker">Month <input id="month" type="month" value="{{ today[:7] }}" required></label></div>
+<div id="status" role="status" aria-live="polite"></div>
+<section class="stats" aria-label="Monthly summary">
+  <article class="stat featured"><div class="stat-label">TOTAL SPENT <span>↗</span></div><h2 id="total">₹0.00</h2><p id="count">0 expenses this month</p></article>
+  <article class="stat"><div class="stat-label">MONTHLY BUDGET <button id="edit-budget" class="text-button">Edit ↗</button></div><h2 id="budget">Not set</h2><p>A plan for your month</p></article>
+  <article class="stat"><div class="stat-label" id="remaining-label">LEFT TO SPEND <span>◉</span></div><h2 id="remaining">—</h2><div class="progress"><div id="budget-progress"></div></div><p id="budget-message">Set a budget to track your balance</p></article>
+</section>
+<section class="charts">
+  <article class="panel"><div class="panel-heading"><div><h3>Spending rhythm</h3><p class="muted">Your daily expenses this month</p></div><span class="tag">DAILY</span></div><div id="daily-chart" class="daily-chart" aria-label="Daily expense chart"></div><div class="axis"><span>Day 1</span><span id="mid-day">15</span><span id="last-day">31</span></div></article>
+  <article class="panel"><div class="panel-heading"><div><h3>Where it goes</h3><p class="muted">Spending by category</p></div><span class="tag">BREAKDOWN</span></div><div id="category-chart" class="category-chart"></div></article>
+</section>
+<section id="transactions" class="panel transactions"><div class="panel-heading"><div><h3>Recent transactions <span id="transaction-count" class="count-pill">0</span></h3><p class="muted">Every little thing, all in one place.</p></div><div class="filters"><input id="search" type="search" placeholder="Search expenses…" aria-label="Search expenses"><select id="filter-category" aria-label="Filter category"><option value="">All categories</option>{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select></div></div>
+<div class="table-wrap"><table><thead><tr><th>EXPENSE</th><th>CATEGORY</th><th>DATE</th><th class="amount">AMOUNT</th><th class="actions">ACTIONS</th></tr></thead><tbody id="expense-rows"></tbody></table></div><div id="empty" class="empty" hidden><div>↗</div><h3>A fresh start</h3><p>Add your first expense to see your month take shape.</p></div><div id="filtered-summary" class="muted table-footer"></div></section>
+<footer>Made for student life. <span>Campus Wallet · Flask + SQLite</span></footer>
+</main>
+<dialog id="expense-dialog"><form id="expense-form"><div class="dialog-heading"><h2 id="form-title">Add expense</h2><button type="button" class="close" data-close aria-label="Close expense form">×</button></div><p class="muted">A quick note now. A clearer picture later.</p><input type="hidden" name="id">
+<label>Description<input name="title" required maxlength="100" placeholder="e.g. Lunch at the canteen"></label>
+<div class="form-grid"><label>Amount (₹)<input name="amount" type="number" required min="0.01" max="10000000" step="0.01" placeholder="0.00"></label><label>Date<input name="spent_on" type="date" required></label></div>
+<label>Category<select name="category" required>{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select></label>
+<label>Notes <span class="muted">(optional)</span><textarea name="notes" maxlength="500" rows="3" placeholder="Anything you want to remember"></textarea></label><p class="form-error" role="alert"></p><button class="primary full" type="submit">Save expense</button></form></dialog>
+<dialog id="budget-dialog"><form id="budget-form"><div class="dialog-heading"><h2>Set monthly budget</h2><button type="button" class="close" data-close aria-label="Close budget form">×</button></div><p class="muted" id="budget-period"></p><label>Budget (₹)<input name="amount" type="number" required min="0.01" max="10000000" step="0.01" placeholder="15000.00"></label><p class="form-error" role="alert"></p><button class="primary full" type="submit">Save budget</button></form></dialog>
+<dialog id="delete-dialog"><form id="delete-form"><h2>Delete this expense?</h2><p id="delete-description" class="muted"></p><p class="form-error" role="alert"></p><div class="dialog-actions"><button type="button" data-close>Keep expense</button><button type="submit" class="danger">Delete expense</button></div></form></dialog>
+</body></html>

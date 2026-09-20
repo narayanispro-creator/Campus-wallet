@@ -1,0 +1,8 @@
+.git
+.venv
+instance
+__pycache__
+*.sqlite3
+.env
+.env.*
+tests
